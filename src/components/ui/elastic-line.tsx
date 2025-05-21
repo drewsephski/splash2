@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react"
+import { type FC, useEffect, useRef, useState } from "react"
 import {
   animate,
   motion,
   useAnimationFrame,
   useMotionValue,
-  ValueAnimationTransition,
+  type ValueAnimationTransition,
 } from "framer-motion"
 
 import { useDimensions } from "@/components/hooks/use-debounced-dimensions"
@@ -20,7 +20,7 @@ interface ElasticLineProps {
   className?: string
 }
 
-const ElasticLine: React.FC<ElasticLineProps> = ({
+const ElasticLine: FC<ElasticLineProps> = ({
   isVertical = false,
   grabThreshold = 5,
   releaseThreshold = 100,
@@ -68,14 +68,14 @@ const ElasticLine: React.FC<ElasticLineProps> = ({
     }
     x.set(dimensions.width / 2)
     y.set(dimensions.height / 2)
-  }, [dimensions, hasAnimatedIn])
+  }, [dimensions, hasAnimatedIn, animateInTransition, x, y, pathLength])
 
   useEffect(() => {
     if (!isGrabbed && hasAnimatedIn) {
       animate(x, dimensions.width / 2, transition)
       animate(y, dimensions.height / 2, transition)
     }
-  }, [isGrabbed])
+  }, [isGrabbed, hasAnimatedIn, x, y, dimensions.width, dimensions.height, transition])
 
   useAnimationFrame(() => {
     if (isGrabbed) {
@@ -100,6 +100,7 @@ const ElasticLine: React.FC<ElasticLineProps> = ({
 
   return (
     <svg
+      aria-hidden="true"
       ref={containerRef}
       className={`w-full h-full ${className}`}
       viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
