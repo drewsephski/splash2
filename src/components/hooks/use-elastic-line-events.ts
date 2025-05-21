@@ -60,7 +60,7 @@ export function useElasticLineEvents(
     } else if (isGrabbed && distance > releaseThreshold) {
       setIsGrabbed(false)
     }
-  }, [x, y, isVertical, isGrabbed, grabThreshold, releaseThreshold, dimensions])
+  }, [x, y, isVertical, isGrabbed, grabThreshold, releaseThreshold, dimensions, containerRef])
 
   return { isGrabbed, controlPoint }
 }
