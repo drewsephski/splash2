@@ -1,14 +1,16 @@
-import { type FC, useEffect, useRef, useState } from "react"
+"use client"
+
+import { useEffect, useRef, useState } from "react"
+import type { ValueAnimationTransition } from "motion/react"
 import {
   animate,
   motion,
   useAnimationFrame,
   useMotionValue,
-  type ValueAnimationTransition,
-} from "framer-motion"
+} from "motion/react"
 
-import { useDimensions } from "@/components/hooks/use-debounced-dimensions"
-import { useElasticLineEvents } from "@/components/hooks/use-elastic-line-events"
+import { useDimensions } from "@/hooks/use-dimensions"
+import { useElasticLineEvents } from "@/hooks/use-elastic-line-events"
 
 interface ElasticLineProps {
   isVertical?: boolean
@@ -20,15 +22,15 @@ interface ElasticLineProps {
   className?: string
 }
 
-const ElasticLine: FC<ElasticLineProps> = ({
+const ElasticLine: React.FC<ElasticLineProps> = ({
   isVertical = false,
   grabThreshold = 5,
   releaseThreshold = 100,
   strokeWidth = 1,
   transition = {
     type: "spring",
-    stiffness: 400,
-    damping: 5,
+    stiffness: 150,
+    damping: 10,
   },
   animateInTransition = {
     duration: 0.3,
@@ -42,16 +44,16 @@ const ElasticLine: FC<ElasticLineProps> = ({
   const [hasAnimatedIn, setHasAnimatedIn] = useState(false)
 
   // Clamp releaseThreshold to container dimensions
-  const clampedReleaseThreshold = Math.min(
-    releaseThreshold,
-    isVertical ? dimensions.width / 2 : dimensions.height / 2
-  )
+  // const clampedReleaseThreshold = Math.min(
+  //   releaseThreshold,
+  //   isVertical ? dimensions.width / 2 : dimensions.height / 2
+  // )
 
   const { isGrabbed, controlPoint } = useElasticLineEvents(
     containerRef,
     isVertical,
     grabThreshold,
-    clampedReleaseThreshold
+    releaseThreshold
   )
 
   const x = useMotionValue(dimensions.width / 2)
@@ -68,14 +70,14 @@ const ElasticLine: FC<ElasticLineProps> = ({
     }
     x.set(dimensions.width / 2)
     y.set(dimensions.height / 2)
-  }, [dimensions, hasAnimatedIn, animateInTransition, x, y, pathLength])
+  }, [dimensions, hasAnimatedIn, animateInTransition, pathLength, x, y])
 
   useEffect(() => {
     if (!isGrabbed && hasAnimatedIn) {
       animate(x, dimensions.width / 2, transition)
       animate(y, dimensions.height / 2, transition)
     }
-  }, [isGrabbed, hasAnimatedIn, x, y, dimensions.width, dimensions.height, transition])
+  }, [isGrabbed, hasAnimatedIn, dimensions, transition, x, y])
 
   useAnimationFrame(() => {
     if (isGrabbed) {
@@ -100,12 +102,12 @@ const ElasticLine: FC<ElasticLineProps> = ({
 
   return (
     <svg
-      aria-hidden="true"
       ref={containerRef}
       className={`w-full h-full ${className}`}
       viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
       preserveAspectRatio="none"
     >
+      <title>Elastic Line</title>
       <motion.path
         ref={pathRef}
         stroke="currentColor"
@@ -118,4 +120,4 @@ const ElasticLine: FC<ElasticLineProps> = ({
   )
 }
 
-export { ElasticLine }
+export default ElasticLine
