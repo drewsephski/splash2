@@ -10,7 +10,7 @@ interface ElasticLineEvents {
 }
 
 export function useElasticLineEvents(
-  containerRef: RefObject<SVGSVGElement | null>,
+  containerRef: RefObject<HTMLElement | null>,
   isVertical: boolean,
   grabThreshold: number,
   releaseThreshold: number
@@ -56,7 +56,12 @@ export function useElasticLineEvents(
         }
       }
 
-      setControlPoint(newControlPoint)
+      // Apply smoothing (linear interpolation)
+      const smoothingFactor = 0.1; // Adjust this value to control the smoothing strength
+      setControlPoint({
+        x: controlPoint.x + (newControlPoint.x - controlPoint.x) * smoothingFactor,
+        y: controlPoint.y + (newControlPoint.y - controlPoint.y) * smoothingFactor,
+      });
 
       if (!isGrabbed && distance < grabThreshold) {
         setIsGrabbed(true)
@@ -64,7 +69,7 @@ export function useElasticLineEvents(
         setIsGrabbed(false)
       }
     }
-  }, [mousePosition, isVertical, isGrabbed, grabThreshold, releaseThreshold, containerRef, dimensions])
+  }, [mousePosition, isVertical, isGrabbed, grabThreshold, releaseThreshold, containerRef, dimensions, controlPoint])
 
   return { isGrabbed, controlPoint }
 }

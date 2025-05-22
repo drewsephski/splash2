@@ -23,6 +23,7 @@ interface StackingCardsProps
   scrollOptons?: UseScrollOptions
   scaleMultiplier?: number
   totalCards: number
+  translateYMultiplier?: number
 }
 
 interface StackingCardItemProps
@@ -38,6 +39,7 @@ export default function StackingCards({
   scrollOptons,
   scaleMultiplier,
   totalCards,
+  translateYMultiplier,
   ...props
 }: StackingCardsProps) {
   const targetRef = useRef<HTMLDivElement>(null)
@@ -49,7 +51,7 @@ export default function StackingCards({
 
   return (
     <StackingCardsContext.Provider
-      value={{ progress: scrollYProgress, scaleMultiplier, totalCards }}
+      value={{ progress: scrollYProgress, scaleMultiplier: scaleMultiplier ?? 0.03, totalCards, translateYMultiplier: translateYMultiplier ?? 10 }}
     >
       <div className={cn(className)} ref={targetRef} {...props}>
         {children}
@@ -67,19 +69,29 @@ const StackingCardItem = ({
 }: StackingCardItemProps) => {
   const {
     progress,
-    scaleMultiplier,
-    totalCards = 0,
+    scaleMultiplier: contextScaleMultiplier,
+    totalCards: contextTotalCards,
+    translateYMultiplier: contextTranslateYMultiplier,
   } = useStackingCardsContext() // Get from Context
-  const scaleTo = 1 - (totalCards - index) * (scaleMultiplier ?? 0.03)
-  const rangeScale = [index * (1 / totalCards), 1]
+  const scaleTo = 1 - (contextTotalCards - index) * (contextScaleMultiplier ?? 0.03)
+  const rangeScale = [index * (1 / contextTotalCards), 1]
   const scale = useTransform(progress, rangeScale, [1, scaleTo])
-  const top = topPosition ?? `${5 + index * 3}%`
+  const top = topPosition ?? "0%"
+
+  // Calculate vertical translation
+  const translateYTo = (contextTotalCards - 1 - index) * (contextTranslateYMultiplier ?? 10);
+  const rangeTranslateY = [index * (1 / contextTotalCards), 1];
+  const translateY = useTransform(progress, rangeTranslateY, [0, -translateYTo]);
+
+  // Calculate opacity
+  const rangeOpacity = [index * (1 / contextTotalCards), index * (1 / contextTotalCards) + (1 / contextTotalCards) * 0.5];
+  const opacity = useTransform(progress, rangeOpacity, [1, 0.5]);
 
   return (
     <div className={cn("h-full sticky top-0", className)} {...props}>
       <motion.div
         className={"origin-top relative h-full"}
-        style={{ top, scale }}
+        style={{ top, scale, translateY, opacity }}
       >
         {children}
       </motion.div>
@@ -89,8 +101,9 @@ const StackingCardItem = ({
 
 const StackingCardsContext = createContext<{
   progress: MotionValue<number>
-  scaleMultiplier?: number
-  totalCards?: number
+  scaleMultiplier: number
+  totalCards: number
+  translateYMultiplier: number
 } | null>(null)
 
 export const useStackingCardsContext = () => {

@@ -1,9 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import VariableFontHoverByRandomLetter from "@/components/ui/variable-font-hover-by-random-letter"
-import BlobEffect from "@/components/ui/blob-effect";
+import { Button } from "@/components/atoms/button";
+import BlobEffect from "@/components/molecules/blob-effect";
+import { useRef } from "react";
+import BoldOnHover from "@/components/ui/bold-on-hover";
+import VariableFontCursorProximity from "@/fancy/components/text/variable-font-cursor-proximity";
 
 function FloatingPaths({ position }: { position: number }) {
     const paths = Array.from({ length: 36 }, (_, i) => ({
@@ -57,8 +59,9 @@ export function BackgroundPaths({
 }: {
     title?: string;
 }) {
+    const containerRef = useRef<HTMLDivElement>(null);
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+        <div ref={containerRef} className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 z-0">
                 <BlobEffect />
             </div>
@@ -76,18 +79,21 @@ export function BackgroundPaths({
                     className="max-w-4xl mx-auto text-center"
                 >
                     <h1 className="text-5xl sm:text-7xl md:text-9xl font-bold mb-4 tracking-tighter">
-                        <VariableFontHoverByRandomLetter
-                            label={title}
-                            staggerDuration={0.03}
+                        <BoldOnHover
+                            text={title}
+                            initialStyle="'wght' 400, 'slnt' 0"
+                            hoverStyle="'wght' 900, 'slnt' -20"
                             className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-neutral-400 to-blue-500 dark:from-neutral-300 dark:to-blue-400"
-                            fromFontVariationSettings="'wght' 400, 'slnt' 0"
-                            toFontVariationSettings="'wght' 900, 'slnt' -20"
                         />
                     </h1>
 
-                    <p className="text-lg md:text-xl text-white mb-8">
-                      Crafting immersive digital experiences with a focus on modern web technologies and 3D interactive interfaces.
-                    </p>
+                    <VariableFontCursorProximity
+                        label="Crafting immersive digital experiences with a focus on modern web technologies and 3D interactive interfaces."
+                        fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                        toFontVariationSettings="'wght' 900, 'slnt' -20"
+                        containerRef={containerRef}
+                        className="text-md md:text-xl text-white mb-8"
+                    />  
 
                     <div
                         className="inline-block group relative p-px rounded-2xl backdrop-blur-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-blue-950/95 dark:bg-black/50 group-hover:bg-gradient-to-br group-hover:from-gray-300 group-hover:to-blue-300"

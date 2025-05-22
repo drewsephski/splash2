@@ -1,21 +1,21 @@
-import { type RefObject, useEffect, useState } from "react"
+import { type RefObject, useEffect, useRef } from "react"
 
-export const useMousePosition = (
+export const useMousePositionRef = (
   containerRef?: RefObject<HTMLElement | SVGElement | null>
 ) => {
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const positionRef = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
     const updatePosition = (x: number, y: number) => {
-      if (containerRef && containerRef.current) {
+      if (containerRef?.current) {
         const rect = containerRef.current.getBoundingClientRect()
         const relativeX = x - rect.left
         const relativeY = y - rect.top
 
         // Calculate relative position even when outside the container
-        setPosition({ x: relativeX, y: relativeY })
+        positionRef.current = { x: relativeX, y: relativeY }
       } else {
-        setPosition({ x, y })
+        positionRef.current = { x, y }
       }
     }
 
@@ -38,5 +38,5 @@ export const useMousePosition = (
     }
   }, [containerRef])
 
-  return position
+  return positionRef
 }

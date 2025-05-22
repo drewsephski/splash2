@@ -201,10 +201,11 @@ const BlobEffect: React.FC = () => {
               rotation-x={Math.PI / 2}
               position={[0, 5, -9]}
               scale={[10, 10, 1]}
+              key='lightformer-rect-0'
             />
             {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (
               <Lightformer
-                key={`${x}-${i}`}
+                key={`lightformer-circle-${i}`}
                 form='circle'
                 intensity={4}
                 rotation={[Math.PI / 2, 0, 0]}
@@ -217,12 +218,14 @@ const BlobEffect: React.FC = () => {
               rotation-y={Math.PI / 2}
               position={[-5, 1, -1]}
               scale={[50, 2, 1]}
+              key='lightformer-rect-1'
             />
             <Lightformer
               intensity={2}
               rotation-y={-Math.PI / 2}
               position={[10, 1, 0]}
               scale={[50, 2, 1]}
+              key='lightformer-rect-2'
             />
           </group>
         </Environment>

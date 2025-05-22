@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-inter)", "sans-serif"], // Set Inter as default sans-serif
+      },
       colors: {
         "neon-blue": "#00f", // Example neon blue
         "neon-orange": "#ff7f00", // Example neon orange
