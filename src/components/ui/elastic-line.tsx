@@ -11,8 +11,7 @@ export function ElasticLine() {
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas?.getContext("2d");
-
-        if (context && width && height) {
+        if (context && canvas && width && height) {
             canvas.width = width;
             canvas.height = height;
 

@@ -1,6 +1,6 @@
 # 3D Web Dev Portfolio
 
-## This is a web development portfolio showcasing various projects and technologies.
+## This is a web development portfolio showcasing various projects and technologies
 
 ## Technologies used
 

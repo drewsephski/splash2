@@ -1,6 +1,6 @@
 'use client';
 
-import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useAspect, useTexture } from '@react-three/drei';
 import { useMemo, useRef, useState, useEffect } from 'react';
 import * as THREE from 'three/webgpu';
@@ -28,8 +28,6 @@ import {
 const TEXTUREMAP = { src: 'https://i.postimg.cc/XYwvXN8D/img-4.png' };
 const DEPTHMAP = { src: 'https://i.postimg.cc/2SHKQh2q/raw-4.webp' };
 
-extend(THREE);
-
 // Post Processing component
 const PostProcessing = ({
   strength = 1,
@@ -42,9 +40,8 @@ const PostProcessing = ({
 }) => {
   const { gl, scene, camera } = useThree();
   const progressRef = useRef({ value: 0 });
-
   const render = useMemo(() => {
-    const postProcessing = new (THREE as any).PostProcessing(gl as THREE.Renderer);
+    const postProcessing = new THREE.PostProcessing(gl as unknown as THREE.Renderer);
     const scenePass = pass(scene, camera);
     const scenePassColor = scenePass.getTextureNode('output');
     const bloomPass = bloom(scenePassColor, strength, 0.5, threshold);
@@ -190,6 +187,7 @@ export const Html = () => {
     setSubtitleDelay(Math.random() * 0.1);
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (visibleWords < titleWords.length) {
       const timeout = setTimeout(() => setVisibleWords(visibleWords + 1), 600);
@@ -197,7 +195,7 @@ export const Html = () => {
     }
     const timeout = setTimeout(() => setSubtitleVisible(true), 800);
     return () => clearTimeout(timeout);
-  }, [visibleWords]);
+  }, [visibleWords, titleWords, titleWords.length]); // Added titleWords and titleWords.length to dependency array
 
   return (
     <div className="h-svh">
@@ -227,8 +225,11 @@ export const Html = () => {
 
       <Canvas
         flat
-        gl={async (props) => {
-          const renderer = new THREE.WebGPURenderer(props as any);
+        gl={async (defaultProps) => {
+          const renderer = new THREE.WebGPURenderer({
+            canvas: defaultProps.canvas as HTMLCanvasElement,
+            powerPreference: 'high-performance',
+          });
           await renderer.init();
           return renderer;
         }}
@@ -240,4 +241,4 @@ export const Html = () => {
   );
 };
 
-export default Html; 
+export default Html;
