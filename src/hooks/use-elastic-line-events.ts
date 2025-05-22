@@ -58,10 +58,10 @@ export function useElasticLineEvents(
 
       // Apply smoothing (linear interpolation)
       const smoothingFactor = 0.1; // Adjust this value to control the smoothing strength
-      setControlPoint({
-        x: controlPoint.x + (newControlPoint.x - controlPoint.x) * smoothingFactor,
-        y: controlPoint.y + (newControlPoint.y - controlPoint.y) * smoothingFactor,
-      });
+      setControlPoint(prevControlPoint => ({
+        x: prevControlPoint.x + (newControlPoint.x - prevControlPoint.x) * smoothingFactor,
+        y: prevControlPoint.y + (newControlPoint.y - prevControlPoint.y) * smoothingFactor,
+      }));
 
       if (!isGrabbed && distance < grabThreshold) {
         setIsGrabbed(true)
@@ -69,7 +69,7 @@ export function useElasticLineEvents(
         setIsGrabbed(false)
       }
     }
-  }, [mousePosition, isVertical, isGrabbed, grabThreshold, releaseThreshold, containerRef, dimensions, controlPoint])
+  }, [mousePosition, isVertical, isGrabbed, grabThreshold, releaseThreshold, containerRef, dimensions])
 
   return { isGrabbed, controlPoint }
 }
